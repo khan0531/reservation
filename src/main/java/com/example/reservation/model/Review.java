@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Review {
 
-    private Long reviewId;
+    private Long id;
 
     private String title;
 
@@ -26,7 +26,7 @@ public class Review {
 
     public ReviewEntity toEntity() {
         return ReviewEntity.builder()
-                .reviewId(this.reviewId)
+                .id(this.id)
                 .title(this.title)
                 .content(this.content)
                 .reservationId(this.reservationId)
@@ -37,7 +37,7 @@ public class Review {
 
     public static Review fromEntity(ReviewEntity reviewEntity) {
         return Review.builder()
-                .reviewId(reviewEntity.getId())
+                .id(reviewEntity.getId())
                 .title(reviewEntity.getTitle())
                 .content(reviewEntity.getContent())
                 .reservationId(reviewEntity.getReservationId())

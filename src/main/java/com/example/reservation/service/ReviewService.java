@@ -18,7 +18,7 @@ public class ReviewService {
     private ReviewRepository reviewRepository;
 
     public Review register(Review review) {
-        boolean exist = this.reviewRepository.existsById(review.getReviewId());
+        boolean exist = this.reviewRepository.existsById(review.getId());
         if (exist) {
             throw new IllegalArgumentException("이미 존재하는 리뷰입니다.");
         }
@@ -74,7 +74,7 @@ public class ReviewService {
     }
 
     public Review updateReview(Review review) {
-        boolean exist = this.reviewRepository.existsById(review.getReviewId());
+        boolean exist = this.reviewRepository.existsById(review.getId());
 
         if (!exist) {
             throw new IllegalArgumentException("존재하지 않는 리뷰입니다.");

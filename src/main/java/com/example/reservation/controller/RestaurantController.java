@@ -28,6 +28,12 @@ public class RestaurantController {
         return ResponseEntity.ok(result);
     }
 
+//    @GetMapping
+//    public ResponseEntity<?> getRestaurant(@PathVariable Long id) {
+//        var result = this.restaurantService.getRestaurant(id);
+//        return ResponseEntity.ok(result);
+//    }
+
     @GetMapping("/autocomplete")
     public ResponseEntity<?> autocomplete(@RequestParam String keyword) {
         var result = this.restaurantService.getRestaurantNameByKeyword(keyword);

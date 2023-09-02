@@ -5,6 +5,7 @@ import com.example.reservation.persist.RestaurantRepository;
 import com.example.reservation.persist.entity.RestaurantEntity;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.Trie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,19 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class RestaurantService {
 
-    //private final Trie trie;
+    private final Trie trie;
 
     private final RestaurantRepository restaurantRepository;
 
     public Restaurant register(Restaurant restaurant) {
-        RestaurantEntity result = this.restaurantRepository.save(restaurant.toEntity());
+        boolean exists = this.restaurantRepository.existsById(restaurant.getId());
 
+        if (exists) {
+            throw new RuntimeException("이미 존재하는 음식점입니다.");
+        }
+
+        RestaurantEntity result = this.restaurantRepository.save(restaurant.toEntity());
+        this.addAutocompleteKeyword(restaurant.getName());
         return Restaurant.fromEntity(result);
     }
 
@@ -41,20 +48,37 @@ public class RestaurantService {
         return result.map(Restaurant::fromEntity);
     }
 
+    public Restaurant getRestaurant(Long id) {
+        var restaurant = this.restaurantRepository.findById(id).orElseThrow();
+
+        return Restaurant.fromEntity(restaurant);
+    }
+
     public Long deleteRestaurant(Long id) {
         var restaurant = this.restaurantRepository.findById(id).orElseThrow();
 
         this.restaurantRepository.delete(restaurant);
+        this.deleteAutocompleteKeyword(restaurant.getName());
         return id;
     }
 
     public Restaurant updateRestaurant(Restaurant restaurant) {
         boolean exist = this.restaurantRepository.existsById(restaurant.getId());
+
         if (!exist) {
             throw new IllegalArgumentException("존재하지 않는 음식점입니다.");
         }
+
         var result = this.restaurantRepository.save(restaurant.toEntity());
 
         return Restaurant.fromEntity(result);
+    }
+
+    public void addAutocompleteKeyword(String keyword) {
+        this.trie.put(keyword, null);
+    }
+
+    public void deleteAutocompleteKeyword(String keyword) {
+        this.trie.remove(keyword, null);
     }
 }
