@@ -1,5 +1,8 @@
 package com.example.reservation.model;
 
+import com.example.reservation.persist.entity.MemberEntity;
+import com.example.reservation.persist.entity.ReservationEntity;
+import com.example.reservation.persist.entity.RestaurantEntity;
 import com.example.reservation.persist.entity.ReviewEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,9 +32,9 @@ public class Review {
                 .id(this.id)
                 .title(this.title)
                 .content(this.content)
-                .reservationId(this.reservationId)
-                .memberId(this.memberId)
-                .restaurantId(this.restaurantId)
+                .reservation(ReservationEntity.builder().id(this.reservationId).build())
+                .member(MemberEntity.builder().id(this.memberId).build())
+                .restaurant(RestaurantEntity.builder().id(this.restaurantId).build())
                 .build();
     }
 
@@ -40,9 +43,9 @@ public class Review {
                 .id(reviewEntity.getId())
                 .title(reviewEntity.getTitle())
                 .content(reviewEntity.getContent())
-                .reservationId(reviewEntity.getReservationId())
-                .memberId(reviewEntity.getMemberId())
-                .restaurantId(reviewEntity.getRestaurantId())
+                .reservationId(reviewEntity.getReservation().getId())
+                .memberId(reviewEntity.getMember().getId())
+                .restaurantId(reviewEntity.getRestaurant().getId())
                 .build();
     }
 }

@@ -1,11 +1,9 @@
 package com.example.reservation.persist.entity;
 
+import com.example.reservation.model.constants.ReservationStatus;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Builder
@@ -20,9 +18,14 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long restaurantId;
+    @ManyToOne
+    private RestaurantEntity restaurant;
 
-    private Long memberId;
+    @ManyToOne
+    private MemberEntity member;
 
     private LocalDateTime reservationTime;
+
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
 }

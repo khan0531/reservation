@@ -1,6 +1,7 @@
 package com.example.reservation.persist.entity;
 
 
+import com.example.reservation.model.constants.Authority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -33,13 +34,18 @@ public class MemberEntity implements UserDetails {
 
     private String name;
 
+    private String email;
+
+    // TODO : ROLE_MANAGER, ROLE_USER 외의 입력에 대한 예외처리 필요
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles;
+    @Enumerated(EnumType.STRING)
+    private List<Authority> roles;
 
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
+                .map(Enum::name)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }

@@ -23,12 +23,6 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
     public Restaurant register(Restaurant restaurant) {
-        boolean exists = this.restaurantRepository.existsById(restaurant.getId());
-
-        if (exists) {
-            throw new RuntimeException("이미 존재하는 음식점입니다.");
-        }
-
         RestaurantEntity result = this.restaurantRepository.save(restaurant.toEntity());
         this.addAutocompleteKeyword(restaurant.getName());
         return Restaurant.fromEntity(result);

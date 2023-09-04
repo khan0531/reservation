@@ -1,5 +1,6 @@
 package com.example.reservation.model;
 
+import com.example.reservation.persist.entity.MemberEntity;
 import com.example.reservation.persist.entity.RestaurantEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,7 @@ public class Restaurant {
                 .name(this.name)
                 .address(this.address)
                 .explanation(this.explanation)
+                .member(MemberEntity.builder().id(this.memberId).build())
                 .build();
     }
 
@@ -37,6 +39,7 @@ public class Restaurant {
                 .name(restaurantEntity.getName())
                 .address(restaurantEntity.getAddress())
                 .explanation(restaurantEntity.getExplanation())
+                .memberId(restaurantEntity.getMember().getId())
                 .build();
     }
 }

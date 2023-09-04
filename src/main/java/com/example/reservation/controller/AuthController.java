@@ -1,6 +1,7 @@
 package com.example.reservation.controller;
 
 import com.example.reservation.model.Auth;
+import com.example.reservation.persist.entity.MemberEntity;
 import com.example.reservation.security.TokenProvider;
 import com.example.reservation.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -22,15 +25,18 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody Auth.SignUp request) {
-        var result = this.memberService.register(request);
+        MemberEntity result = this.memberService.register(request);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Auth.SignIn request) {
-        var member = this.memberService.authenticate(request);
-        var token = this.tokenProvider.generateToken(member.getUsername(), member.getRoles());
+        MemberEntity member = this.memberService.authenticate(request);
+        String token = this.tokenProvider.generateToken(
+                member.getUsername(),
+                member.getRoles().stream().map(Enum::name).collect(Collectors.toList())
+        );
         log.info("user login -> " + request.getMemberId());
-        return ResponseEntity.ok(member);
+        return ResponseEntity.ok(token);
     }
 }

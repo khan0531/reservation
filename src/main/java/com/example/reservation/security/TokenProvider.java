@@ -1,10 +1,7 @@
 package com.example.reservation.security;
 
 import com.example.reservation.service.MemberService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -56,22 +54,16 @@ public class TokenProvider {
     }
 
     public String getUsername(String token) {
-        return this.parseClaims(token).getSubject();
+        return Jwts.parser().setSigningKey(this.secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     public boolean validateToken(String token) {
-        if (!StringUtils.hasText(token)) return false;
-
-        var claims = this.parseClaims(token);
-        return !claims.getExpiration().before(new Date());
-    }
-
-    private Claims parseClaims(String token) {
         try {
-            return Jwts.parser().setSigningKey(this.secretKey).parseClaimsJws(token).getBody();
-        } catch (ExpiredJwtException e) {
-            // TODO
-            return e.getClaims();
+            Jws<Claims> claims = Jwts.parser().setSigningKey(this.secretKey).parseClaimsJws(token);
+
+            return !claims.getBody().getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
         }
     }
 }

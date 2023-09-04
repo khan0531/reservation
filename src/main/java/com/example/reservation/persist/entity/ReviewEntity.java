@@ -2,10 +2,7 @@ package com.example.reservation.persist.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Builder
 @Entity(name = "REVIEW")
@@ -23,9 +20,13 @@ public class ReviewEntity {
 
         private String content;
 
-        private Long reservationId;
+        @OneToOne
+        private ReservationEntity reservation;
 
-        private Long memberId;
+        @ManyToOne
+        private MemberEntity member;
 
-        private Long restaurantId;
+        @ManyToOne
+        private RestaurantEntity restaurant;
+
 }
