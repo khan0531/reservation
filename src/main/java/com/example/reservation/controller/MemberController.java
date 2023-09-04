@@ -2,12 +2,14 @@ package com.example.reservation.controller;
 
 import com.example.reservation.model.Reservation;
 import com.example.reservation.model.Review;
+import com.example.reservation.persist.entity.MemberEntity;
 import com.example.reservation.service.ReservationService;
 import com.example.reservation.service.ReviewService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +27,11 @@ public class MemberController {
     private final ReviewService reviewService;
 
     @GetMapping("/{id}/reservations")
-    public ResponseEntity<?> getReservationByMemberId(@PathVariable Long id) {
+    public ResponseEntity<?> getReservationByMemberId(@AuthenticationPrincipal MemberEntity member, @PathVariable Long id) {
+        if (!member.getId().equals(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+
         List<Reservation> result = this.reservationService.getReservationByMemberId(id);
         return ResponseEntity.ok(result);
     }
@@ -50,9 +56,12 @@ public class MemberController {
         return ResponseEntity.ok(result);
     }
 
-
     @GetMapping("/{id}/reviews")
-    public ResponseEntity<?> getReviewByMemberId(@PathVariable Long id) {
+    public ResponseEntity<?> getReviewByMemberId(@AuthenticationPrincipal MemberEntity member, @PathVariable Long id) {
+        if (!member.getId().equals(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+
         List<Review> result = this.reviewService.getReviewByMemberId(id);
         return ResponseEntity.ok(result);
     }
