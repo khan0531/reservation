@@ -1,5 +1,6 @@
 package com.example.reservation.service;
 
+import com.example.reservation.exception.impl.AlreadyExistUserException;
 import com.example.reservation.model.Auth;
 import com.example.reservation.persist.MemberRepository;
 import com.example.reservation.persist.entity.MemberEntity;
@@ -27,9 +28,9 @@ public class MemberService implements UserDetailsService {
 
    public MemberEntity register(Auth.SignUp member) {
        // 아이디가 존재하는 경우 exception 발생
-       boolean exists = this.memberRepository.existsByMemberId(member.getMemberId()); // not implemented yet
+       boolean exists = this.memberRepository.existsByMemberId(member.getMemberId());
        if (exists) {
-           throw new RuntimeException("이미 존재하는 아이디 입니다.");
+           throw new AlreadyExistUserException();
        }
        // ID 생성 가능한 경우, 멤버 테이블에 저장
        // 비밀번호는 암호화 되어서 저장되어야함

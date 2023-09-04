@@ -1,6 +1,8 @@
 package com.example.reservation.service;
 
 import com.example.reservation.dto.ReservationRequestDto;
+import com.example.reservation.exception.impl.NoReservationException;
+import com.example.reservation.exception.impl.NoReviewException;
 import com.example.reservation.model.Reservation;
 import com.example.reservation.persist.ReservationRepository;
 import com.example.reservation.persist.entity.ReservationEntity;
@@ -21,10 +23,6 @@ public class ReservationService {
     public Reservation register(ReservationRequestDto dto) {
         Reservation reservation = Reservation.fromDto(dto);
 
-        boolean exist = this.reservationRepository.existsByMemberId(reservation.getMemberId());
-        if (exist) {
-            throw new IllegalArgumentException("현재 예약이 존재합니다.");
-        }
         var result = this.reservationRepository.save(reservation.toEntity());
         return Reservation.fromEntity(result);
     }
@@ -40,7 +38,8 @@ public class ReservationService {
     }
 
     public Long deleteReservation(Long id) {
-        var reservation = this.reservationRepository.findById(id).orElseThrow();
+        var reservation = this.reservationRepository.findById(id)
+                .orElseThrow(() -> new NoReservationException());
 
         this.reservationRepository.delete(reservation);
         return reservation.getId();
@@ -50,10 +49,39 @@ public class ReservationService {
      */
     public Reservation checkReservation(Long id) {
         ReservationEntity reservationEntity = this.reservationRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("없는 예약입니다.")
-        );
+                () -> new NoReservationException());
         Reservation reservation = Reservation.fromEntity(reservationEntity);
         reservation.checkTime();
+
+        var result = this.reservationRepository.save(reservation.toEntity());
+        return Reservation.fromEntity(result);
+    }
+
+    public Reservation acceptReservation(Long id) {
+        ReservationEntity reservationEntity = this.reservationRepository.findById(id).orElseThrow(
+                () -> new NoReviewException());
+        Reservation reservation = Reservation.fromEntity(reservationEntity);
+        reservation.acceptReservation();
+
+        var result = this.reservationRepository.save(reservation.toEntity());
+        return Reservation.fromEntity(result);
+    }
+
+    public Reservation rejectReservation(Long id) {
+        ReservationEntity reservationEntity = this.reservationRepository.findById(id).orElseThrow(
+                () -> new NoReservationException());
+        Reservation reservation = Reservation.fromEntity(reservationEntity);
+        reservation.rejectReservation();
+
+        var result = this.reservationRepository.save(reservation.toEntity());
+        return Reservation.fromEntity(result);
+    }
+
+    public Reservation cancelReservation(Long id) {
+        ReservationEntity reservationEntity = this.reservationRepository.findById(id).orElseThrow(
+                () -> new NoReservationException());
+        Reservation reservation = Reservation.fromEntity(reservationEntity);
+        reservation.cancelReservation();
 
         var result = this.reservationRepository.save(reservation.toEntity());
         return Reservation.fromEntity(result);

@@ -70,4 +70,28 @@ public class Reservation {
             this.status = ReservationStatus.ARRIVED;
         }
     }
+
+    // 매니저가 승인
+    public void acceptReservation() {
+        if (this.status != ReservationStatus.WAITING) {
+            throw new IllegalArgumentException("이미 승인 혹은 취소 된 예약입니다.");
+        }
+        this.status = ReservationStatus.ACCEPTED;
+    }
+
+    // 매니저가 반려
+    public void rejectReservation() {
+        if (this.status != ReservationStatus.WAITING) {
+            throw new IllegalArgumentException("이미 승인 혹은 반려 된 예약입니다.");
+        }
+        this.status = ReservationStatus.REJECTED;
+    }
+
+    // 유저가 취소
+    public void cancelReservation() {
+        if (this.status != ReservationStatus.ACCEPTED) {
+            throw new IllegalArgumentException("이미 취소 된 예약입니다.");
+        }
+        this.status = ReservationStatus.CANCELLED;
+    }
 }

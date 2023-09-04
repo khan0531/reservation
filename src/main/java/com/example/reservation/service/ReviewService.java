@@ -1,5 +1,6 @@
 package com.example.reservation.service;
 
+import com.example.reservation.exception.impl.NoReviewException;
 import com.example.reservation.model.Review;
 import com.example.reservation.persist.ReviewRepository;
 import com.example.reservation.persist.entity.ReviewEntity;
@@ -29,7 +30,8 @@ public class ReviewService {
     }
 
     public Review getReview(Long id) {
-        var review = this.reviewRepository.findById(id).orElseThrow();
+        var review = this.reviewRepository.findById(id)
+                .orElseThrow(() -> new NoReviewException());
 
         return Review.fromEntity(review);
     }
@@ -58,16 +60,9 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
-    public List<Review> getReviewByRestaurantIdAndMemberId(Long restaurantId, Long memberId) {
-        List<ReviewEntity> reviews = this.reviewRepository.findByRestaurantIdAndMemberId(restaurantId, memberId);
-
-        return reviews.stream()
-                .map(Review::fromEntity)
-                .collect(Collectors.toList());
-    }
-
     public Long deleteReview(Long reviewId) {
-        var review = this.reviewRepository.findById(reviewId).orElseThrow();
+        var review = this.reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NoReviewException());
 
         this.reviewRepository.delete(review);
         return review.getId();
@@ -77,7 +72,7 @@ public class ReviewService {
         boolean exist = this.reviewRepository.existsById(review.getId());
 
         if (!exist) {
-            throw new IllegalArgumentException("존재하지 않는 리뷰입니다.");
+            throw new NoReviewException();
         }
 
         var result = this.reviewRepository.save(review.toEntity());

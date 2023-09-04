@@ -1,5 +1,6 @@
 package com.example.reservation.service;
 
+import com.example.reservation.exception.impl.NoRestaurantException;
 import com.example.reservation.model.Restaurant;
 import com.example.reservation.persist.RestaurantRepository;
 import com.example.reservation.persist.entity.RestaurantEntity;
@@ -43,13 +44,15 @@ public class RestaurantService {
     }
 
     public Restaurant getRestaurant(Long id) {
-        var restaurant = this.restaurantRepository.findById(id).orElseThrow();
+        var restaurant = this.restaurantRepository.findById(id)
+                .orElseThrow(() -> new NoRestaurantException());
 
         return Restaurant.fromEntity(restaurant);
     }
 
     public Long deleteRestaurant(Long id) {
-        var restaurant = this.restaurantRepository.findById(id).orElseThrow();
+        var restaurant = this.restaurantRepository.findById(id)
+                .orElseThrow(() -> new NoRestaurantException());
 
         this.restaurantRepository.delete(restaurant);
         this.deleteAutocompleteKeyword(restaurant.getName());
@@ -60,7 +63,7 @@ public class RestaurantService {
         boolean exist = this.restaurantRepository.existsById(restaurant.getId());
 
         if (!exist) {
-            throw new IllegalArgumentException("존재하지 않는 음식점입니다.");
+            throw new NoRestaurantException();
         }
 
         var result = this.restaurantRepository.save(restaurant.toEntity());

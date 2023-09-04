@@ -53,6 +53,7 @@ public class RestaurantController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     public ResponseEntity<?> updateRestaurant(@RequestBody Restaurant restaurant) {
         Restaurant result = this.restaurantService.updateRestaurant(restaurant);
         return ResponseEntity.ok(result);
